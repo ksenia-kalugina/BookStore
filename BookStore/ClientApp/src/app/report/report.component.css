@@ -1,0 +1,64 @@
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: url(https://i.pinimg.com/originals/f3/65/a9/f365a9f2deb31983ab568ac3aa274573.jpg) 100% 100% no-repeat;
+  background-size: cover;
+  filter: blur(15px);
+}
+
+main {
+  /*height: 650px;*/
+  margin: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+
+
+.mistake {
+  background-color: rgba(255,179,131,0.7);
+}
+
+
+
+.example-1 input[type=file] {
+  outline: 0;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none
+}
+
+.example-1 .label {
+  width: 120px;
+  border: 2px dashed grey;
+  border-radius: 5px;
+  display: block;
+  padding: 1.2em;
+  transition: border 300ms ease;
+  cursor: pointer;
+  text-align: center
+}
+
+  .example-1 .label i {
+    display: block;
+    font-size: 42px;
+    padding-bottom: 16px
+  }
+
+  .example-1 .label i, .example-1 .label .title {
+    color: grey;
+    transition: 200ms color
+  }
+
+  .example-1 .label:hover {
+    border-color: #FFA283
+  }
+
+    .example-1 .label:hover i, .example-1 .label:hover .title {
+      color: #875645
+    }

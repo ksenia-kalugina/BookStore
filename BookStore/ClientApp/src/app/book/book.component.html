@@ -1,0 +1,33 @@
+<div class="background"></div>
+<main>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <div class="example-1">
+    <label class="label">
+      <i class="material-icons">attach_file</i>
+      <span class="title">Добавить файл</span>
+      <input type='file' accept=".xlsx" (change)="incomingfile($event)">
+    </label>
+  </div>
+  <button  class="btn btn-info" (click)="clear()">Clear</button>
+</main>
+<main>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">SKU</th>
+        <th scope="col">Title</th>
+        <th scope="col">Publisher</th>
+        <th scope="col">Rubles</th>
+        <th scope="col">Active</th>
+      </tr>      
+    </thead>
+    <tr *ngFor="let item of items">
+      <td scope="row">{{item.SKU}}</td>
+      <td>{{item.Title}}</td>
+      <td>{{item.Publisher}}</td>
+      <td>{{item.Rubles}}</td>
+      <td>{{item.Active}}</td>
+    </tr>
+  </table>
+</main>
+
