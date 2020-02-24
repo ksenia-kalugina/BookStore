@@ -11,33 +11,30 @@
   }
 
   main {
-    /*height: 650px;*/
     margin: 30px;
     padding: 20px;
     background-color: white;
     border-radius: 5px;
     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+  }  
+
+  .example-1 input[type=file] {
+    outline: 0;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none
   }
 
-
-
-.example-1 input[type=file] {
-  outline: 0;
-  opacity: 0;
-  pointer-events: none;
-  user-select: none
-}
-
-.example-1 .label {
-  width: 120px;
-  border: 2px dashed grey;
-  border-radius: 5px;
-  display: block;
-  padding: 1.2em;
-  transition: border 300ms ease;
-  cursor: pointer;
-  text-align: center
-}
+  .example-1 .label {
+    width: 120px;
+    border: 2px dashed grey;
+    border-radius: 5px;
+    display: block;
+    padding: 1.2em;
+    transition: border 300ms ease;
+    cursor: pointer;
+    text-align: center
+  }
 
   .example-1 .label i {
     display: block;
@@ -54,9 +51,9 @@
     border-color: #FFA283
   }
 
-    .example-1 .label:hover i, .example-1 .label:hover .title {
-      color: #875645
-    }
+  .example-1 .label:hover i, .example-1 .label:hover .title {
+    color: #875645
+  }
 
 
 

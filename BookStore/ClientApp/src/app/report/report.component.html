@@ -1,17 +1,20 @@
 <div class="background"></div>
 <main>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <div style="display:inline-block" class="example-1 d-inline-block">
-      <label class="label">
+  <div style="display:inline-block" class="addFiles">
+    <label class="label">
       <i class="material-icons">attach_file</i>
       <span class="title">Добавить файл</span>
       <input type='file' accept=".txt" multiple="multiple" (change)="fileChanged($event)">
     </label>
   </div>
-  <div style="display:inline-block">
+  <div style="display:inline-block" class="listFiles">
     <ul class="list-group list-group-flush">
       <li class="list-group-item" *ngFor="let filename of filesName">{{filename}}</li>
-    </ul>    
+    </ul>
+  </div>
+  <div *ngIf="readyToDownload" style="display:inline-block" class="divDownload">
+    <button class=" btn btn-download" (click)="downloadCSV()">Скачать отчет</button>
   </div>
 </main>
 <main>
@@ -33,7 +36,7 @@
       <td>{{item.developer}}</td>
       <td>{{item.customerPrice}}</td>
       <td>{{item.units}}</td>
-      <td>{{(0.7*(+item.units)*(+item.customerPrice)).toFixed(2)}}</td>
+      <td>{{item.total}}</td>
       <td>{{item.errorMessage}}</td>
     </tr>
   </table>

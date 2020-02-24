@@ -11,7 +11,6 @@
 }
 
 main {
-  /*height: 650px;*/
   margin: 30px;
   padding: 20px;
   background-color: white;
@@ -19,21 +18,35 @@ main {
   box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
 }
 
-
 .mistake {
   background-color: rgba(255,179,131,0.7);
 }
 
+.listFiles {
+  padding: 15px;
+}
 
+.divDownload {
+  padding: 15px;
+}
 
-.example-1 input[type=file] {
+.btn-download {
+  height: 40px;
+  background-color: #FFB8A1;
+}
+
+.btn-download:hover {
+    background-color: #F4B19A;
+}
+
+.addFiles input[type=file] {
   outline: 0;
   opacity: 0;
   pointer-events: none;
   user-select: none
 }
 
-.example-1 .label {
+.addFiles .label {
   width: 120px;
   border: 2px dashed grey;
   border-radius: 5px;
@@ -44,21 +57,21 @@ main {
   text-align: center
 }
 
-  .example-1 .label i {
+.addFiles .label i {
     display: block;
     font-size: 42px;
     padding-bottom: 16px
-  }
+}
 
-  .example-1 .label i, .example-1 .label .title {
+.addFiles .label i, .addFiles .label .title {
     color: grey;
     transition: 200ms color
-  }
+}
 
-  .example-1 .label:hover {
+  .addFiles .label:hover {
     border-color: #FFA283
   }
 
-    .example-1 .label:hover i, .example-1 .label:hover .title {
+    .addFiles .label:hover i, .addFiles .label:hover .title {
       color: #875645
     }
