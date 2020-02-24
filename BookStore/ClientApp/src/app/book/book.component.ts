@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
 
   selector: 'app-book-component',
-  templateUrl: './book.component.html',
+  templateUrl: './book.component.html', 
   styleUrls: ['./book.component.css']
 })
 export class BookComponent {
@@ -18,6 +18,8 @@ export class BookComponent {
     http.get<Book[]>(/*baseUrl +*/ 'api/Book/Get').subscribe(result => {
       this.items = result;
     }, error => console.error(error));
+
+
   }  
 
   async changeBooks(event) {
