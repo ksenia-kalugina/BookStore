@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import * as XLSX from 'ts-xlsx';
-import { DataService } from '../data.service';
 import { Book } from '../book';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
 
@@ -13,10 +13,12 @@ export class BookComponent {
   items:Book[]= new Array();  
   arrayBuffer: any;
   file: File;
-
-  constructor(private dataService: DataService) {
-    this.dataService.getBooks()
-      .subscribe((data: Book[]) => this.items = data);}
+  
+  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+    http.get<Book[]>(/*baseUrl +*/ 'api/Book/Get').subscribe(result => {
+      this.items = result;
+    }, error => console.error(error));
+  }  
 
   async changeBooks(event) {
     this.file = event.target.files[0];
