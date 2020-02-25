@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
   selector: 'app-book-component',
   templateUrl: './book.component.html',
-  styleUrls: ['./book.component.css']
+  styleUrls: ['./book.component.css'] 
 })
 export class BookComponent {
   items: Book[] = new Array();
