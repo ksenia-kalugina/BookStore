@@ -6,17 +6,18 @@ import { HttpClient } from '@angular/common/http';
 @Component({
 
   selector: 'app-book-component',
-  templateUrl: './book.component.html', 
+  templateUrl: './book.component.html',
   styleUrls: ['./book.component.css']
 })
 export class BookComponent {
-  items:Book[]= new Array();  
+  items: Book[] = new Array();
+  itemsFromBD: Book[] = new Array();
   arrayBuffer: any;
   file: File;
   
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     http.get<Book[]>(/*baseUrl +*/ 'api/Book/Get').subscribe(result => {
-      this.items = result;
+      this.itemsFromBD = result;
     }, error => console.error(error));
 
 

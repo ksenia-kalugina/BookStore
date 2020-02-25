@@ -8,9 +8,9 @@
       <input type='file' accept=".xlsx" (change)="changeBooks($event)">
     </label>
   </div>
-  <button  class="btn btn-info" (click)="clear()">Clear</button>
+  <button  class="btn btn-info" (click)="clear()">Clear</button> 
 </main>
-<main>
+<main *ngIf="itemsFromBD.length">
   <table class="table">
     <thead>
       <tr>
@@ -21,7 +21,7 @@
         <th scope="col">Active</th>
       </tr>
     </thead>
-    <tr *ngFor="let item of items">
+    <tr *ngFor="let item of itemsFromBD">
       <td scope="row">{{item.id}}</td>
       <td>{{item.title}}</td>
       <td>{{item.publisher}}</td>
@@ -30,8 +30,8 @@
     </tr>
   </table>
 </main>
-<main>
-  <table class="table">
+<main *ngIf="items.length">
+  <table class="table" >
     <thead>
       <tr>
         <th scope="col">SKU</th>
@@ -42,11 +42,11 @@
       </tr>      
     </thead>
     <tr *ngFor="let item of items">
-      <td scope="row">{{item.SKU}}</td>
-      <td>{{item.Title}}</td>
-      <td>{{item.Publisher}}</td>
-      <td>{{item.Rubles}}</td>
-      <td>{{item.Active}}</td>
+      <td scope="row">{{item.id}}</td>
+      <td>{{item.title}}</td>
+      <td>{{item.publisher}}</td>
+      <td>{{item.price}}</td>
+      <td>{{item.active}}</td>
     </tr>
   </table>
 </main>
