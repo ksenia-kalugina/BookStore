@@ -16,44 +16,44 @@
     background-color: white;
     border-radius: 5px;
     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
-  }  
-
-  .example-1 input[type=file] {
-    outline: 0;
-    opacity: 0;
-    pointer-events: none;
-    user-select: none
   }
 
-  .example-1 .label {
-    width: 120px;
-    border: 2px dashed grey;
-    border-radius: 5px;
-    display: block;
-    padding: 1.2em;
-    transition: border 300ms ease;
-    cursor: pointer;
-    text-align: center
-  }
+.addFiles input[type=file] {
+  outline: 0;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none
+}
 
-  .example-1 .label i {
+.addFiles .label {
+  width: 120px;
+  border: 2px dashed grey;
+  border-radius: 5px;
+  display: block;
+  padding: 1.2em;
+  transition: border 300ms ease;
+  cursor: pointer;
+  text-align: center
+}
+
+  .addFiles .label i {
     display: block;
     font-size: 42px;
     padding-bottom: 16px
   }
 
-  .example-1 .label i, .example-1 .label .title {
+  .addFiles .label i, .addFiles .label .title {
     color: grey;
     transition: 200ms color
   }
 
-  .example-1 .label:hover {
+  .addFiles .label:hover {
     border-color: #FFA283
   }
 
-  .example-1 .label:hover i, .example-1 .label:hover .title {
-    color: #875645
-  }
+    .addFiles .label:hover i, .addFiles .label:hover .title {
+      color: #875645
+    }
 
 
 

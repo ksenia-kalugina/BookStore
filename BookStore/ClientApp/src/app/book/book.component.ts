@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
   selector: 'app-book-component',
   templateUrl: './book.component.html',
-  styleUrls: ['./book.component.css'] 
+  styleUrls: ['./book.component.css']
 })
 export class BookComponent {
   items: Book[] = new Array();
@@ -16,11 +16,9 @@ export class BookComponent {
   file: File;
   
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<Book[]>(/*baseUrl +*/ 'api/Book/Get').subscribe(result => {
+    http.get<Book[]>(baseUrl + 'api/Book/Get').subscribe(result => {
       this.itemsFromBD = result;
     }, error => console.error(error));
-
-
   }  
 
   async changeBooks(event) {
@@ -41,14 +39,15 @@ export class BookComponent {
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
         var items = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        console.log(XLSX.utils.sheet_to_json(worksheet, { raw: true }));
         var itemsBook: Book[] = new Array();
         for (var i = 0; i < items.length; i++) {
           var book: Book = new Book();
-          book.id = items[i].SKU;
-          book.title = items[i].Title;
-          book.publisher = items[i].Publisher;
-          book.price = items[i].Rubles;
-          book.active = items[i].Active;
+          //book.id = items[i].SKU;
+          //book.title = items[i].Title;
+          //book.publisher = items[i].Publisher;
+          //book.price = items[i].Rubles;
+          //book.active = items[i].Active;
           itemsBook.push(book);
         }            
         resolve(itemsBook);
