@@ -1,27 +1,26 @@
 <div class="background"></div>
 <main>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <div class="addFiles">
+  <div style="display:inline-block" class="addFiles">
     <label class="label">
       <i class="material-icons">attach_file</i>
-      <span class="title">Добавить excel файл</span>
-      <input type='file' accept=".xlsx" (change)="changeBooksExcel($event)">
+      <span class="title">+ файл excel</span>
+      <input #excelBooks type='file' accept=".xlsx" (change)="changeBooksExcel($event)">
     </label>
-  </div>
-  <button class="btn btn-info" (click)="clear()">Clear</button>
-  <!--<button class="btn btn-info" (click)="importBooks()">Import</button>-->
-
+    <a *ngIf="items.length" href="#excel">Перейти</a>
+  </div>  
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <div class="addFiles">
+  <div style="display:inline-block" class="addFiles">
     <label class="label">
       <i class="material-icons">attach_file</i>
-      <span class="title">Добавить файл CSV</span>
-      <input type='file' accept=".csv" (change)="changeBooksCSV($event)">
+      <span class="title">+ файл CSV</span>
+      <input #CSVBooks type='file' accept=".csv" (change)="changeBooksCSV($event)">
     </label>
-  </div>
-  <button class="btn btn-info" (click)="exportBooks()">Export</button>
+    <a *ngIf="itemsCSV.length" href="#csv">Перейти</a>
+  </div> 
 </main>
-<main *ngIf="itemsFromBD.length"> 
+<main *ngIf="itemsFromBD.length">
+  <button class="btn btn-style" (click)="exportBooks()">Export</button>
   <table class="table">
     <thead>
       <tr>
@@ -42,7 +41,10 @@
   </table>
 </main>
 <main *ngIf="items.length">
-  <table class="table" >
+  <a name="excel"></a>
+  <button class="btn btn-style" (click)="addBooksToBD(items)">Добавить в базу данных</button>
+  <button class="btn btn-style" (click)="clearExcelBooks()">Очистить</button>
+  <table class="table">
     <thead>
       <tr>
         <th scope="col">Id</th>
@@ -50,7 +52,7 @@
         <th scope="col">Publisher</th>
         <th scope="col">Rubles</th>
         <th scope="col">Active</th>
-      </tr>      
+      </tr>
     </thead>
     <tr *ngFor="let item of items">
       <td scope="row">{{item.id}}</td>
@@ -62,7 +64,9 @@
   </table>
 </main>
 <main *ngIf="itemsCSV.length">
-  <button class="btn btn-info" (click)="addCSVBooks()">Добавить в базу данных</button>
+  <a name="csv"></a>
+  <button class="btn btn-style" (click)="addBooksToBD(itemsCSV)">Добавить в базу данных</button>
+  <button class="btn btn-style" (click)="clearCSVBooks()">Очистить</button>
   <table class="table">
     <thead>
       <tr>

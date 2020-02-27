@@ -36,7 +36,7 @@ main {
 }
 
 .btn-download:hover {
-    background-color: #F4B19A;
+  background-color: #F4B19A;
 }
 
 .addFiles input[type=file] {
@@ -58,20 +58,20 @@ main {
 }
 
 .addFiles .label i {
-    display: block;
-    font-size: 42px;
-    padding-bottom: 16px
+  display: block;
+  font-size: 42px;
+  padding-bottom: 16px
 }
 
 .addFiles .label i, .addFiles .label .title {
-    color: grey;
-    transition: 200ms color
+  color: grey;
+  transition: 200ms color
 }
 
-  .addFiles .label:hover {
-    border-color: #FFA283
-  }
+.addFiles .label:hover {
+  border-color: #FFA283
+}
 
-    .addFiles .label:hover i, .addFiles .label:hover .title {
-      color: #875645
-    }
+.addFiles .label:hover i, .addFiles .label:hover .title {
+  color: #875645
+}

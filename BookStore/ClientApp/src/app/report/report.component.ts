@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Book } from '../book';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-report-component',
@@ -10,11 +12,14 @@ export class ReportComponent {
   items: AppleReportItem[];
   filesName: string[];
   readyToDownload: boolean;
+  http: HttpClient;
 
-  constructor() {
+  
+  constructor(http: HttpClient) {
     this.items = new Array();
     this.filesName = new Array();
     this.readyToDownload = false;
+    this.http = http;
   }
 
   async fileChanged(e) {
@@ -29,6 +34,8 @@ export class ReportComponent {
     }
     this.makeReport(this.items);
     this.downloadCSV()
+    this.addToBD(this.items);
+
   }
   
   async parseDocument(file: File): Promise<AppleReportItem[]> {
@@ -108,6 +115,22 @@ export class ReportComponent {
     hiddenElement.target = '_blank';
     hiddenElement.download = 'report.csv';
     hiddenElement.click();
+  }
+
+  addToBD(items: AppleReportItem[]) {
+    var books: Book[] = new Array();
+    for (var i = 0; i < items.length; i++) {
+      var book: Book = new Book();
+      book.id = items[i].sku;
+      book.title = items[i].title;
+      book.publisher = items[i].developer;
+      book.price = items[i].customerPrice;
+      book.active = false;
+      books.push(book);
+    }
+    this.http.post('api/Book/Post', books).subscribe({
+      error: error => console.error('There was an error!', error)
+    });
   }
 }
 

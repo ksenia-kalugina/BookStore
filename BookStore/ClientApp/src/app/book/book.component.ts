@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import * as XLSX from 'ts-xlsx';
 import { Book } from '../book';
 import { HttpClient } from '@angular/common/http';
@@ -15,6 +15,7 @@ export class BookComponent {
   arrayBuffer: any;
   file: File;
   http: HttpClient;
+
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this.http = http;
     http.get<Book[]>('api/Book/Get').subscribe(result => {
@@ -23,8 +24,10 @@ export class BookComponent {
   }  
 
   async changeBooksExcel(event) {
-    this.file = event.target.files[0];
-    this.items = await this.readFromExcelFile();    
+    if (event.target.files[0]) {
+      this.file = event.target.files[0];
+      this.items = await this.readFromExcelFile();
+    }        
   }
 
   readFromExcelFile(): Promise<Book[]> {
@@ -39,17 +42,21 @@ export class BookComponent {
         var workbook = XLSX.read(bstr, { type: "binary" });
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
-        var stringItems: string [] = XLSX.utils.sheet_to_csv(worksheet).toString().split(/[\r\n]+/);        
-        var itemsBook: Book[] = new Array();
-        console.log(XLSX.utils.sheet_to_formulae(worksheet));
-        for(var i = 1; i < stringItems.length; i++) {
-          var property = stringItems[i].split(',');          
+        var stringItems: string[] = XLSX.utils.sheet_to_csv(worksheet, { FS: ";", RS: "\n"}).toString().split(/[\r\n]+/);        
+        var itemsBook: Book[] = new Array();   
+        for(var i = 1; i < stringItems.length-1; i++) {
+          var property = stringItems[i].split(';');          
           var book: Book = new Book();          
-          book.id = property[0];//проблема с запятыми
+          book.id = property[0];
           book.title = property[1];
           book.publisher = property[2];           
-          book.price = +property[3];          
-          //book.active = Boolean(JSON.parse(property[4]));
+          book.price = +property[3];
+          if (property[4] == "1") {
+            book.active = true;
+          }
+          else {
+            book.active = false;
+          }
           itemsBook.push(book);         
         }        
         resolve(itemsBook);
@@ -111,17 +118,26 @@ export class BookComponent {
     });
   }
 
-  clear() {
+  @ViewChild('excelBooks') excelBooks: ElementRef;
+  clearExcelBooks() {
     this.items = new Array();
+    this.excelBooks.nativeElement.value = null;
   }
-
-  addCSVBooks() {
-    this.http.post('api/Book/Post', this.itemsCSV).subscribe({
+    
+  addBooksToBD(books: Book[]) {
+    this.http.post('api/Book/Post', books).subscribe({
       error: error => console.error('There was an error!', error)
     });
 
     this.http.get<Book[]>('api/Book/Get').subscribe(result => {
       this.itemsFromBD = result;
-    }, error => console.error(error));    
+    }, error => console.error(error));
+    this.clearCSVBooks();
+    this.clearExcelBooks();
+  }
+  @ViewChild('CSVBooks') CSVBooks: ElementRef;
+  clearCSVBooks() {
+    this.itemsCSV = new Array();
+    this.CSVBooks.nativeElement.value = null;
   }
 }

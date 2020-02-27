@@ -31,8 +31,8 @@ namespace BookStore.Controllers
                         price = Convert.ToDouble(words[3]),
                         active = Convert.ToBoolean(Convert.ToInt32(words[4]))
                     };
-                    this.books.Add(book);
-                }
+                    this.books.Add(book);                    
+                }                
             }
             catch (Exception e)
             {
@@ -52,29 +52,32 @@ namespace BookStore.Controllers
             {
                 return BadRequest();
             }
-
             foreach(var book in books)
             {
+                bool add = true;
+                for (var i = 0; i < this.books.Count; i++)
+                {
+                    if (book.id == this.books[i].id)
+                       add = false;
+                }
+                if(add)
                 this.books.Add(book);
             }            
             string textToFile = "";
-            for (int i = 0; i < books.Length; i++)
+            for (int i = 0; i < this.books.Count; i++)
             {
                 int active = 0;
-                if (books[i].active)
+                if (this.books[i].active)
                   active = 1;
-                textToFile += "\n" + books[i].id + ";" + books[i].title + ";" + books[i].publisher + ";" + books[i].price + ";" + active + ";";
+                if(i!=0)
+                textToFile += "\n";
+                textToFile += this.books[i].id + ";" + this.books[i].title + ";" + this.books[i].publisher + ";" + this.books[i].price + ";" + active + ";";
             }
             try
-            {
-                string textFromFile = "";
-                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
-                {
-                    textFromFile= sr.ReadToEnd();                    
-                }
+            {                
                 using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.Default))
                 {
-                    sw.Write(textFromFile);
+                   
                     sw.Write(textToFile);
                 }
             }
@@ -83,6 +86,6 @@ namespace BookStore.Controllers
                 Console.WriteLine(e.Message);
             }
             return Ok();
-        }
+        }        
     }
 }
