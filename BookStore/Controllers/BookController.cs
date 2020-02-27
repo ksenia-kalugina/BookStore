@@ -11,44 +11,78 @@ namespace BookStore.Controllers
     [Route("api/[controller]")]
     public class BookController : Controller
     {
-        
-        List<Book> books = new List<Book>();
+        readonly string path = @"wwwroot\bookBD.csv";
+        List<Book> books = new List<Book>();        
+
         public BookController()
         {
-            
-        }
-
-        [HttpGet("[action]")]
-        public IEnumerable<Book> Get()
-        {
-            string path = @"wwwroot\bookBD.csv";
             try
             {
-                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+                using StreamReader sr = new StreamReader(path, System.Text.Encoding.Default);
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
+                    String[] words = line.Split(';');
+                    Book book = new Book
                     {
-                        String[] words = line.Split( ';');
-                        Book book = new Book { id = words[0], title = words[1], publisher = words[2], price = Convert.ToDouble(words[3]), active = Convert.ToBoolean(Convert.ToInt32(words[4])) };
-                        this.books.Add(book);
-                    }
+                        id = words[0],
+                        title = words[1],
+                        publisher = words[2],
+                        price = Convert.ToDouble(words[3]),
+                        active = Convert.ToBoolean(Convert.ToInt32(words[4]))
+                    };
+                    this.books.Add(book);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-
-
-            //Book[] books = new Book[] {
-            //    new Book { id = "1", title =text, publisher = "asasas", price = 123.2, active = true},
-            //    new Book { id = "2", title = "qwqwqw", publisher = "asasas", price = 123.2, active = true },
-            //    new Book { id = "3", title = "qwqwqw", publisher = "asasas", price = 123.2, active = true },
-            //    new Book { id = "4", title = "qwqwqw", publisher = "asasas", price = 123.2, active = true },
-            //    new Book { id = "5", title = "qwqwqw", publisher = "asasas", price = 123.2, active = true }
-            //};
+        }
+        [HttpGet("[action]")]
+        public IEnumerable<Book> Get()
+        {            
             return this.books.ToList();
+        }
+       
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Post([FromBody]Book[] books)
+        {
+            if (books == null)
+            {
+                return BadRequest();
+            }
+
+            foreach(var book in books)
+            {
+                this.books.Add(book);
+            }            
+            string textToFile = "";
+            for (int i = 0; i < books.Length; i++)
+            {
+                int active = 0;
+                if (books[i].active)
+                  active = 1;
+                textToFile += "\n" + books[i].id + ";" + books[i].title + ";" + books[i].publisher + ";" + books[i].price + ";" + active + ";";
+            }
+            try
+            {
+                string textFromFile = "";
+                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+                {
+                    textFromFile= sr.ReadToEnd();                    
+                }
+                using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.Default))
+                {
+                    sw.Write(textFromFile);
+                    sw.Write(textToFile);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return Ok();
         }
     }
 }

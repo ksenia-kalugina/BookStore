@@ -4,17 +4,28 @@
   <div class="addFiles">
     <label class="label">
       <i class="material-icons">attach_file</i>
-      <span class="title">Добавить файл</span>
-      <input type='file' accept=".xlsx" (change)="changeBooks($event)">
+      <span class="title">Добавить excel файл</span>
+      <input type='file' accept=".xlsx" (change)="changeBooksExcel($event)">
     </label>
   </div>
-  <button  class="btn btn-info" (click)="clear()">Clear</button> 
+  <button class="btn btn-info" (click)="clear()">Clear</button>
+  <!--<button class="btn btn-info" (click)="importBooks()">Import</button>-->
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <div class="addFiles">
+    <label class="label">
+      <i class="material-icons">attach_file</i>
+      <span class="title">Добавить файл CSV</span>
+      <input type='file' accept=".csv" (change)="changeBooksCSV($event)">
+    </label>
+  </div>
+  <button class="btn btn-info" (click)="exportBooks()">Export</button>
 </main>
 <main *ngIf="itemsFromBD.length"> 
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">SKU</th>
+        <th scope="col">Id</th>
         <th scope="col">Title</th>
         <th scope="col">Publisher</th>
         <th scope="col">Rubles</th>
@@ -34,7 +45,7 @@
   <table class="table" >
     <thead>
       <tr>
-        <th scope="col">SKU</th>
+        <th scope="col">Id</th>
         <th scope="col">Title</th>
         <th scope="col">Publisher</th>
         <th scope="col">Rubles</th>
@@ -42,6 +53,27 @@
       </tr>      
     </thead>
     <tr *ngFor="let item of items">
+      <td scope="row">{{item.id}}</td>
+      <td>{{item.title}}</td>
+      <td>{{item.publisher}}</td>
+      <td>{{item.price}}</td>
+      <td>{{item.active}}</td>
+    </tr>
+  </table>
+</main>
+<main *ngIf="itemsCSV.length">
+  <button class="btn btn-info" (click)="addCSVBooks()">Добавить в базу данных</button>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Title</th>
+        <th scope="col">Publisher</th>
+        <th scope="col">Rubles</th>
+        <th scope="col">Active</th>
+      </tr>
+    </thead>
+    <tr *ngFor="let item of itemsCSV">
       <td scope="row">{{item.id}}</td>
       <td>{{item.title}}</td>
       <td>{{item.publisher}}</td>
