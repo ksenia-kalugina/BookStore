@@ -119,17 +119,35 @@ export class BookComponent {
     this.excelBooks.nativeElement.value = null;
   }
     
-  addBooksToBD(books: Book[]) {
-    this.http.post('api/Book/Post', books).subscribe({
-      error: error => console.error('There was an error!', error)
+  async addBooksToBD(books: Book[]) {
+    //var promise = new Promise(function (resolve, reject) {
+    //  //http.post('api/Book/Post', books).subscribe({
+    //  //  error: error => console.error('There was an error!', error)
+    //  //});
+      
+    //});
+    
+    //promise.then(this.get, this.get);
+    //console.log(promise.then(this.get));
+    this.http.post('api/Book/Post', books).toPromise().then(() => {
+      this.http.get<Book[]>('api/Book/Get').subscribe(result => {
+        this.booksFromBD = result;
+      }, error => console.error(error));
     });
-
-    this.http.get<Book[]>('api/Book/Get').subscribe(result => {
-      this.booksFromBD = result;
-    }, error => console.error(error));
+    //this.http.get<Book[]>('api/Book/Get').subscribe(result => {
+    //  this.booksFromBD = result;
+    //}, error => console.error(error));
     this.clearCSVBooks();
     this.clearExcelBooks();
   }
+
+  
+  get() { 
+      this.http.get<Book[]>('api/Book/Get').subscribe(result => {
+      this.booksFromBD = result;
+    }, error => console.error(error));
+  }
+
   @ViewChild('CSVBooks') CSVBooks: ElementRef;
   clearCSVBooks() {
     this.booksCSV = new Array();
