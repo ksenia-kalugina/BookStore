@@ -3,14 +3,14 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <div style="display:inline-block" class="addFiles">
     <label class="label">
-      <i class="material-icons">attach_file</i>
+      <i class="material-icons">+</i>
       <span class="title">Добавить файл</span>
       <input type='file' accept=".txt" multiple="multiple" (change)="fileChanged($event)">
     </label>
   </div>
   <div style="display:inline-block" class="listFiles">
     <ul class="list-group list-group-flush">
-      <li class="list-group-item" *ngFor="let filename of filesName">{{filename}}</li>
+      <li class="list-group-item" *ngFor="let filename of reportFilesName">{{filename}}</li>
     </ul>
   </div>
   <div *ngIf="readyToDownload" style="display:inline-block" class="divDownload">
@@ -30,7 +30,7 @@
         <th scope="col"></th>
       </tr>
     </thead>
-    <tr *ngFor="let item of items" [class]="item.error">
+    <tr *ngFor="let item of appleReport" [class]="item.error">
       <td scope="row">{{item.sku}}</td>
       <td>{{item.title}}</td>
       <td>{{item.developer}}</td>

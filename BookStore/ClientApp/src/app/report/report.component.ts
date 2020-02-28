@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Book } from '../book';
 import { HttpClient } from '@angular/common/http';
+import { AppleReportItem } from '../apple-report-item';
 
 @Component({
   selector: 'app-report-component',
@@ -9,44 +10,42 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ReportComponent {
   
-  items: AppleReportItem[];
-  filesName: string[];
+  appleReport: AppleReportItem[];
+  reportFilesName: string[];
   readyToDownload: boolean;
   http: HttpClient;
-
-  
+    
   constructor(http: HttpClient) {
-    this.items = new Array();
-    this.filesName = new Array();
+    this.appleReport = new Array();
+    this.reportFilesName = new Array();
     this.readyToDownload = false;
     this.http = http;
   }
 
   async fileChanged(e) {
-    this.items = [];
-    this.filesName = [];
+    this.appleReport = [];
+    this.reportFilesName = [];
     this.readyToDownload = false;
     for (var i = 0; i < e.target.files.length; ++i) {      
-      this.filesName[i] = e.target.files[i].name;
+      this.reportFilesName[i] = e.target.files[i].name;
       var items1 = await this.parseDocument(e.target.files[i]);
-      var items2 = this.items;
-      this.items = items1.concat(items2);
+      var items2 = this.appleReport;
+      this.appleReport = items1.concat(items2);
     }
-    this.makeReport(this.items);
+    this.makeReport(this.appleReport);
     this.downloadCSV()
-    this.addToBD(this.items);
-
+    this.addToBD(this.appleReport);
   }
   
   async parseDocument(file: File): Promise<AppleReportItem[]> {
-    return new Promise<AppleReportItem[]>( (resolve, reject) => {
-      var reportItems: string[] = new Array();
+    return new Promise<AppleReportItem[]>((resolve) => {
+      var reportString: string[] = new Array();
       var fileReader = new FileReader();
       fileReader.onload = (e) => {
-        reportItems = fileReader.result.toString().split(/[\r\n]+/);
-        var reportObjectItems: AppleReportItem[] = new Array();
-        for (var i = 1; i < reportItems.length; ++i) {
-          var property = reportItems[i].split('\t');
+        reportString = fileReader.result.toString().split(/[\r\n]+/);
+        var reportObject: AppleReportItem[] = new Array();
+        for (var i = 1; i < reportString.length; ++i) {
+          var property = reportString[i].split('\t');
           var item: AppleReportItem = new AppleReportItem();          
           item.sku = property[2];
           item.developer = property[3];
@@ -54,93 +53,85 @@ export class ReportComponent {
           item.units = +property[7];
           item.customerPrice = +property[15];         
           item.total = +(0.7 * item.units * item.customerPrice).toFixed(2);
-          reportObjectItems[i - 1] = item;
+          reportObject[i - 1] = item;
         }        
-        resolve(reportObjectItems);
+        resolve(reportObject);
       }
       fileReader.readAsText(file);      
     });     
   }
 
-  makeReport(reportObjectItems: AppleReportItem[]) {
-    var reportObjectItemsSorted: AppleReportItem[] = reportObjectItems.sort((n1, n2) => {
+  makeReport(reportF: AppleReportItem[]) {
+    var reportSorted: AppleReportItem[] = reportF.sort((n1, n2) => {
       if (n1.sku > n2.sku) { return 1;}
       if (n1.sku < n2.sku) { return -1;}
       return 0;
     });    
-    var items: AppleReportItem[] = new Array();
-    items.push(reportObjectItemsSorted[0]);
-    for (var i = 1; i < reportObjectItemsSorted.length; i++) {
-      if (items[items.length - 1].sku === reportObjectItemsSorted[i].sku) {
-        if (items[items.length - 1].title !== reportObjectItemsSorted[i].title) {
-          items[items.length - 1].error = "mistake";
-          items[items.length - 1].errorMessage = "ошибка:разные названия, но одинаковые sku";
-          items.push(reportObjectItemsSorted[i]);
-          items[items.length - 1].error = "mistake";
-          items[items.length - 1].errorMessage = "ошибка:разные названия, но одинаковые sku";
+    var report: AppleReportItem[] = new Array();
+    report.push(reportSorted[0]);
+    var error: string = "mistake";
+    for (var i = 1; i < reportSorted.length; i++) {
+      if (report[report.length - 1].sku === reportSorted[i].sku) {
+        if (report[report.length - 1].title !== reportSorted[i].title) {
+          var errorTitleMessage: string = "ошибка:разные названия, но одинаковые sku";
+          report[report.length - 1].error = error;
+          report[report.length - 1].errorMessage = errorTitleMessage;
+          report.push(reportSorted[i]);
+          report[report.length - 1].error = error;
+          report[report.length - 1].errorMessage = errorTitleMessage;
           continue;
         }
-        if (items[items.length - 1].customerPrice !== reportObjectItemsSorted[i].customerPrice) {
-          items[items.length - 1].error = "mistake";
-          items[items.length - 1].errorMessage = "ошибка:разные цены, но одинаковые sku";
-          items.push(reportObjectItemsSorted[i]);
-          items[items.length - 1].error = "mistake";
-          items[items.length - 1].errorMessage = "ошибка:разные цены, но одинаковые sku";
+        if (report[report.length - 1].customerPrice !== reportSorted[i].customerPrice) {
+          var errorPriceMessage: string = "ошибка:разные цены, но одинаковые sku";
+          report[report.length - 1].error = error;
+          report[report.length - 1].errorMessage = errorPriceMessage;
+          report.push(reportSorted[i]);
+          report[report.length - 1].error = error;
+          report[report.length - 1].errorMessage = errorPriceMessage;
           continue;
         }
-        items[items.length - 1].units = items[items.length - 1].units + reportObjectItemsSorted[i].units;
+        report[report.length - 1].units = report[report.length - 1].units + reportSorted[i].units;
       }
       else {
-        items.push(reportObjectItemsSorted[i]);
+        report.push(reportSorted[i]);
       }
     }
-    this.items = items;
+    this.appleReport = report;
     this.readyToDownload = true;
   }  
 
   downloadCSV() {
-    var items = this.items;
-    var csv = "id;Title;Publisher;Price;Count;Total;\n";
-    for (var i = 0; i < items.length; i++) {
-      csv += items[i].sku + ";";
-      csv += items[i].title + ";";
-      csv += items[i].developer + ";";
-      csv += items[i].customerPrice + ";";
-      csv += items[i].units + ";";
-      csv += items[i].total + ";";
-      csv += "\n";
+    var report = this.appleReport;
+    var textToCSV = "id;Title;Publisher;Price;Count;Total;\n";
+    for (var i = 0; i < report.length; i++) {
+      textToCSV += report[i].sku + ";";
+      textToCSV += report[i].title + ";";
+      textToCSV += report[i].developer + ";";
+      textToCSV += report[i].customerPrice + ";";
+      textToCSV += report[i].units + ";";
+      textToCSV += report[i].total + ";";
+      textToCSV += "\n";
     }
     var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(textToCSV);
     hiddenElement.target = '_blank';
     hiddenElement.download = 'report.csv';
     hiddenElement.click();
   }
 
-  addToBD(items: AppleReportItem[]) {
+  addToBD(report: AppleReportItem[]) {
     var books: Book[] = new Array();
-    for (var i = 0; i < items.length; i++) {
+    for (var i = 0; i < report.length; i++) {
       var book: Book = new Book();
-      book.id = items[i].sku;
-      book.title = items[i].title;
-      book.publisher = items[i].developer;
-      book.price = items[i].customerPrice;
-      book.active = false;
+      book.id = report[i].sku;
+      book.title = report[i].title;
+      book.publisher = report[i].developer;
+      book.price = report[i].customerPrice;
+      book.active = true;
       books.push(book);
     }
     this.http.post('api/Book/Post', books).subscribe({
       error: error => console.error('There was an error!', error)
     });
   }
-}
-
-class AppleReportItem {
-  units: number;
-  customerPrice: number;
-  developer: string;
-  title: string;
-  sku: string;
-  total: number;
-  error: string = "noMistake";
-  errorMessage: string;  
 }

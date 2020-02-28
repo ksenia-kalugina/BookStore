@@ -9,41 +9,42 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./book.component.css']
 })
 export class BookComponent {
-  items: Book[] = new Array();
-  itemsCSV: Book[] = new Array();
-  itemsFromBD: Book[] = new Array();
+  booksExcel: Book[] = new Array();
+  booksCSV: Book[] = new Array();
+  booksFromBD: Book[] = new Array();
   arrayBuffer: any;
   file: File;
   http: HttpClient;
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+  constructor(http: HttpClient) {
     this.http = http;
     http.get<Book[]>('api/Book/Get').subscribe(result => {
-      this.itemsFromBD = result;
+      this.booksFromBD = result;
     }, error => console.error(error));
   }  
 
   async changeBooksExcel(event) {
     if (event.target.files[0]) {
       this.file = event.target.files[0];
-      this.items = await this.readFromExcelFile();
+      this.booksExcel = await this.readFromExcelFile();
     }        
   }
 
   readFromExcelFile(): Promise<Book[]> {
-    return new Promise<Book[]>((resolve, reject) => {
+    return new Promise<Book[]>((resolve) => {
       let fileReader = new FileReader();
       fileReader.onload = (e) => {
         this.arrayBuffer = fileReader.result;
         var data = new Uint8Array(this.arrayBuffer);
         var arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        for (var i = 0; i != data.length; ++i)
+          arr[i] = String.fromCharCode(data[i]);
         var bstr = arr.join("");      
         var workbook = XLSX.read(bstr, { type: "binary" });
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
         var stringItems: string[] = XLSX.utils.sheet_to_csv(worksheet, { FS: ";", RS: "\n"}).toString().split(/[\r\n]+/);        
-        var itemsBook: Book[] = new Array();   
+        var books: Book[] = new Array();   
         for(var i = 1; i < stringItems.length-1; i++) {
           var property = stringItems[i].split(';');          
           var book: Book = new Book();          
@@ -51,66 +52,60 @@ export class BookComponent {
           book.title = property[1];
           book.publisher = property[2];           
           book.price = +property[3];
-          if (property[4] == "1") {
+          if (property[4] == "1") 
             book.active = true;
-          }
-          else {
+          else
             book.active = false;
-          }
-          itemsBook.push(book);         
+          books.push(book);         
         }        
-        resolve(itemsBook);
+        resolve(books);
       }
-        fileReader.readAsArrayBuffer(this.file);
+      fileReader.readAsArrayBuffer(this.file);
     });
   }
 
   exportBooks() {
-    var items = this.itemsFromBD;
-    var csv = "id;Title;Publisher;Price;Active;";
-    for (var i = 0; i < items.length; i++) {
-      csv += "\n"+items[i].id + ";";
-      csv += items[i].title + ";";
-      csv += items[i].publisher + ";";
-      csv += items[i].price + ";";
-      if (items[i].active) {
-        csv += 1 + ";";
-      }
-      else {
-        csv += 0 + ";";
-      }
+    var books = this.booksFromBD;
+    var textToCsv = "id;Title;Publisher;Price;Active;";
+    for (var i = 0; i < books.length; i++) {
+      textToCsv += "\n" + books[i].id + ";";
+      textToCsv += books[i].title + ";";
+      textToCsv += books[i].publisher + ";";
+      textToCsv += books[i].price + ";";
+      if (books[i].active)
+        textToCsv += 1 + ";";
+      else 
+        textToCsv += 0 + ";";
     }
     var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(textToCsv);
     hiddenElement.target = '_blank';
     hiddenElement.download = 'books.csv';
     hiddenElement.click();
   }
 
   async changeBooksCSV(e) {
-    this.itemsCSV = await this.parseDocumentCSV(e.target.files[0]);
+    this.booksCSV = await this.parseDocumentCSV(e.target.files[0]);
   }
 
   async parseDocumentCSV(file: File): Promise<Book[]> {
-    return new Promise<Book[]>((resolve, reject) => {
+    return new Promise<Book[]>((resolve) => {
       var booksString: string[] = new Array();
       var fileReader = new FileReader();
       fileReader.onload = (e) => {
         booksString = fileReader.result.toString().split(/[\r\n]+/);
         var booksObject: Book[] = new Array();
         for (var i = 1; i < booksString.length; ++i) {
-          var bookProperty = booksString[i].split(';');
-          if (!bookProperty.length) {
+          var bookProperties = booksString[i].split(';');
+          if (!bookProperties.length)
             break;
-          }
-          var item: Book = new Book();
-          item.id = bookProperty[0];
-          item.title = bookProperty[1];
-          item.publisher =bookProperty[2];
-          item.price = +bookProperty[3];
-          item.active = Boolean(JSON.parse(bookProperty[4]));
-          console.log(Boolean(JSON.parse(bookProperty[4])));
-          booksObject[i - 1] = item;
+          var book: Book = new Book();
+          book.id = bookProperties[0];
+          book.title = bookProperties[1];
+          book.publisher = bookProperties[2];
+          book.price = +bookProperties[3];
+          book.active = Boolean(JSON.parse(bookProperties[4]));
+          booksObject[i - 1] = book;
         }
         resolve(booksObject);
       }
@@ -120,7 +115,7 @@ export class BookComponent {
 
   @ViewChild('excelBooks') excelBooks: ElementRef;
   clearExcelBooks() {
-    this.items = new Array();
+    this.booksExcel = new Array();
     this.excelBooks.nativeElement.value = null;
   }
     
@@ -130,14 +125,14 @@ export class BookComponent {
     });
 
     this.http.get<Book[]>('api/Book/Get').subscribe(result => {
-      this.itemsFromBD = result;
+      this.booksFromBD = result;
     }, error => console.error(error));
     this.clearCSVBooks();
     this.clearExcelBooks();
   }
   @ViewChild('CSVBooks') CSVBooks: ElementRef;
   clearCSVBooks() {
-    this.itemsCSV = new Array();
+    this.booksCSV = new Array();
     this.CSVBooks.nativeElement.value = null;
   }
 }
