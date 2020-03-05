@@ -1,5 +1,5 @@
-import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
-import * as XLSX from 'ts-xlsx';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import * as XLSX from '@angular/ts-xlsx';
 import { Book } from '../book';
 import { HttpClient } from '@angular/common/http';
 
@@ -8,41 +8,45 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './book.component.html',
   styleUrls: ['./book.component.css']
 })
-export class BookComponent {
+
+export class BookComponent implements OnInit {
   booksExcel: Book[] = new Array();
   booksCSV: Book[] = new Array();
-  booksFromBD: Book[] = new Array();
-  arrayBuffer: any;
-  file: File;
+  booksFromBD: Book[] = new Array();  
+  @ViewChild('excelBooks') excelBooks: ElementRef;
+  @ViewChild('CSVBooks') CSVBooks: ElementRef;  
   http: HttpClient;
 
   constructor(http: HttpClient) {
     this.http = http;
-    http.get<Book[]>('api/Book/Get').subscribe(result => {
+  }
+
+  ngOnInit() {
+    this.http.get<Book[]>('api/Book/Get').subscribe(result => {
       this.booksFromBD = result;
     }, error => console.error(error));
-  }  
+  }
 
   async changeBooksExcel(event) {
     if (event.target.files[0]) {
-      this.file = event.target.files[0];
-      this.booksExcel = await this.readFromExcelFile();
+      this.booksExcel = await this.readFromExcelFile(event.target.files[0]);
     }        
   }
 
-  readFromExcelFile(): Promise<Book[]> {
+  readFromExcelFile(file:File): Promise<Book[]> {
     return new Promise<Book[]>((resolve) => {
       let fileReader = new FileReader();
       fileReader.onload = (e) => {
-        this.arrayBuffer = fileReader.result;
-        var data = new Uint8Array(this.arrayBuffer);
+        var arrayBuffer: any=fileReader.result;
+        var data = new Uint8Array(arrayBuffer);
         var arr = new Array();
-        for (var i = 0; i != data.length; ++i)
+        for (var i = 0; i != data.length; ++i) {
           arr[i] = String.fromCharCode(data[i]);
+        }          
         var bstr = arr.join("");      
         var workbook = XLSX.read(bstr, { type: "binary" });
-        var first_sheet_name = workbook.SheetNames[0];
-        var worksheet = workbook.Sheets[first_sheet_name];
+        var firstSheetName = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[firstSheetName];
         var stringItems: string[] = XLSX.utils.sheet_to_csv(worksheet, { FS: ";", RS: "\n"}).toString().split(/[\r\n]+/);        
         var books: Book[] = new Array();   
         for(var i = 1; i < stringItems.length-1; i++) {
@@ -52,15 +56,17 @@ export class BookComponent {
           book.title = property[1];
           book.publisher = property[2];           
           book.price = +property[3];
-          if (property[4] == "1") 
+          if (property[4] == "1") {
             book.active = true;
-          else
+          }
+          else {
             book.active = false;
+          }
           books.push(book);         
         }        
         resolve(books);
       }
-      fileReader.readAsArrayBuffer(this.file);
+      fileReader.readAsArrayBuffer(file);
     });
   }
 
@@ -72,13 +78,15 @@ export class BookComponent {
       textToCsv += books[i].title + ";";
       textToCsv += books[i].publisher + ";";
       textToCsv += books[i].price + ";";
-      if (books[i].active)
+      if (books[i].active) {
         textToCsv += 1 + ";";
-      else 
+      }
+      else {
         textToCsv += 0 + ";";
+      }
     }
     var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(textToCsv);
+    hiddenElement.href =  'data:text/csv;charset=utf-8,' + encodeURI(textToCsv);
     hiddenElement.target = '_blank';
     hiddenElement.download = 'books.csv';
     hiddenElement.click();
@@ -97,8 +105,9 @@ export class BookComponent {
         var booksObject: Book[] = new Array();
         for (var i = 1; i < booksString.length; ++i) {
           var bookProperties = booksString[i].split(';');
-          if (!bookProperties.length)
+          if (!bookProperties.length) {
             break;
+          }
           var book: Book = new Book();
           book.id = bookProperties[0];
           book.title = bookProperties[1];
@@ -112,8 +121,7 @@ export class BookComponent {
       fileReader.readAsText(file);
     });
   }
-
-  @ViewChild('excelBooks') excelBooks: ElementRef;
+  
   clearExcelBooks() {
     this.booksExcel = new Array();
     this.excelBooks.nativeElement.value = null;
@@ -127,16 +135,8 @@ export class BookComponent {
     });
     this.clearCSVBooks();
     this.clearExcelBooks();
-  }
-
+  } 
   
-  get() { 
-      this.http.get<Book[]>('api/Book/Get').subscribe(result => {
-      this.booksFromBD = result;
-    }, error => console.error(error));
-  }
-
-  @ViewChild('CSVBooks') CSVBooks: ElementRef;
   clearCSVBooks() {
     this.booksCSV = new Array();
     this.CSVBooks.nativeElement.value = null;
